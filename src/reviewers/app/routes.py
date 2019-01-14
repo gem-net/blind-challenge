@@ -1,9 +1,30 @@
 from datetime import datetime
 
 from flask import redirect, url_for, render_template, flash, abort, g, send_file
+from flask_login import login_required, login_user, logout_user
 
 from . import app, update_drive_listing
+from .forms import LoginForm
+from .models import User
 
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User()
+        if not user.check_password(form.password.data):
+            flash('Incorrect password')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        return redirect(url_for('review'))
+    return render_template("login.html", form=form)
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route('/reload')
 def load_members_list():
@@ -16,7 +37,8 @@ def load_members_list():
 
 
 @app.route('/')
-def index():
+@login_required
+def review():
     if True:
         return render_template("review.html", df=g.review.df, cols_show=g.review.cols_show)
     else:

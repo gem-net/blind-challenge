@@ -5,8 +5,11 @@ from flask import Flask, g, current_app
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
 from flask_moment import Moment
+from flask_login import LoginManager, current_user
 
 from .config import config
+from .models import User
+
 
 app = Flask(__name__)
 app.config.from_object(config[os.getenv('FLASK_ENV') or 'default'])
@@ -14,8 +17,14 @@ app.config.from_object(config[os.getenv('FLASK_ENV') or 'default'])
 bootstrap = Bootstrap()
 bootstrap.init_app(app)
 
-mail = Mail()
-mail.init_app(app)
+lm = LoginManager(app)
+lm.login_view = 'login'
+
+
+@lm.user_loader
+def load_user(user_id):
+    return User()
+
 
 moment = Moment(app)
 

@@ -25,6 +25,7 @@ class Config(object):
     TEAM_DRIVE_ID = os.environ.get('TEAM_DRIVE_ID')
     REVIEW_FOLDER_ID = os.environ.get('REVIEW_FOLDER_ID')
     REVIEW_FOLDER_TITLE = os.environ.get('REVIEW_FOLDER_TITLE')
+    SHARED_PSWD = os.environ.get('SHARED_PSWD')
 
 
 class DevelopmentConfig(Config):
