@@ -1,0 +1,47 @@
+<!-- goes in body -->
+{% extends "base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% block app_content %}
+
+<div class="container-fluid">
+    <div id="cgem_im"><img style="max-width:250px;" src="/static/cgem_750.png"></div>
+    <div class="row">
+
+    <div class="col-xs-12 col-sm-12 col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
+    <h1><i class="far fa-file-alt"></i>NSF Review Documents</h1>
+        <p>You can download individual files below, or download a zip archive containing all files.</p>
+    <p><a href="{{ url_for('get_folder_zip') }}"><i class="far fa-file-archive mr-1"></i>Complete zip archive</a> (Note: it may take up to 20 seconds to build the zip file.)</p>
+    <div class="drive-listing table-responsive">
+    {% for path, d in df.groupby('path') %}
+        <pre>{{ path }}</pre>
+        <table class="review-table table table-condensed table-striped table-hover">
+        {% if loop.index == 1 %}
+            <thead><tr>
+            <th>Document</th>
+            <th>Modified</th>
+            <th>Download</th>
+            </tr></thead>
+        {% endif %}
+        <tbody>
+            {% for ind, row in d.iterrows() %}
+            <tr>
+                <td class="title-col"><a href="{{ row.loc['url_view'] }}" target="_blank">
+                        <span class="mr-1"><img class="mt-1" src="{{ row.loc['icon'] }}" alt="icon"></span>
+                        {{ row.title }}
+                        </a></td>
+                <td class="mod-col">{{ moment(row.loc['date_modified']).calendar() }}</td>
+                <td><a href="{{ url_for('download', file_id=row.loc['id']) }}"><i class="fas fa-cloud-download-alt"></i></a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    {% endfor %}
+    </div>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

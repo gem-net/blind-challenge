@@ -1,0 +1,16 @@
+name: reviewers
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - Flask
+  - Flask-Mail
+  - Flask-Moment
+  - Flask-WTF
+  - google-api-python-client
+  - google-auth
+  - pandas
+  - python-dotenv
+  - networkx
+  - pip:
+    - flask-bootstrap

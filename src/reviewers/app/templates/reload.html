@@ -1,0 +1,11 @@
+<html>
+    <head>
+        <title>Data reloaded.</title>
+    </head>
+    <body>
+        <h1>Data reloaded.</h1>
+        {% for message in get_flashed_messages() %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </body>
+</html>

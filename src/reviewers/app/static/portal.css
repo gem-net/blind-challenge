@@ -1,0 +1,36 @@
+h1 > i {
+    margin-right: 1rem;
+}
+
+td img {
+    margin-right: 5px;
+}
+
+
+/* REVIEW */
+.mr-1 {
+    margin-right: 5px;
+}
+
+#cgem_im {
+    max-width: 250px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.review-table .title-col {
+    width: 350px;
+    min-width: 350px;
+}
+
+.review-table .mod-col {
+    width: 200px;
+    min-width: 200px;
+}
+
+.drive-listing pre {
+    margin-top: 2rem;
+    /*margin-bottom: 1rem;*/
+    background-color: #00648c;
+    color: white;
+}
