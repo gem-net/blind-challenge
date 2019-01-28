@@ -8,6 +8,26 @@ td img {
 
 
 /* REVIEW */
+#download-instructions {
+    margin-top: 2rem;
+}
+#download-instructions p {
+    margin-bottom: 0px;
+}
+
+#zip-link {
+    font-size: large;
+}
+#zip-note {
+    color: darkgray;
+}
+
+#cgem-links a {
+    margin-right: 5px;
+    margin-top: 5px;
+    background-color: #00648c !important;
+}
+
 .mr-1 {
     margin-right: 5px;
 }
