@@ -32,7 +32,7 @@
         <tbody>
             {% for ind, row in d.iterrows() %}
             <tr>
-                <td class="title-col"><a href="{{ row.loc['url_view'] }}" target="_blank">
+                <td class="title-col"><a href="{{ url_for('download', file_id=row.loc['id']) }}">{# Previously row.loc['url_view'] #}
                         <span class="mr-1"><img class="mt-1" src="{{ row.loc['icon'] }}" alt="icon"></span>
                         {{ row.title }}
                         </a></td>
@@ -56,7 +56,5 @@
     </div>
   </div>
 </div>
-
-
 
 {% endblock %}
