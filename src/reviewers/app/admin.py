@@ -74,11 +74,11 @@ class ReviewTable(ApiTable):
         ('title', 'Document'),
         ('date_modified', 'Modified'),
     ])
-    cols_other = ['path', 'date_created', 'icon', 'id', 'kind', 'last_user', 'mimeType',
+    cols_other = ['path', 'path_show', 'date_created', 'icon', 'id', 'kind', 'last_user', 'mimeType',
                   'thumb', 'url_content', 'url_view']
 
     def refresh_df(self):
         files = file_tree_to_df(self.root_folder_id, self.root_folder_title)
         files = files[list(ReviewTable.cols_show) + ReviewTable.cols_other]
-        files = files.sort_values(['path', 'title'])
+        files = files.sort_values(['path', 'mimeType', 'title'])
         self._df = files

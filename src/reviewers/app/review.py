@@ -134,10 +134,16 @@ def file_tree_to_df(root_folder_id, root_title=None):
         node_ids = nx.algorithms.shortest_paths.generic.shortest_path(graph, 'root', folder_id)
         node_titles = [title_dict[i] for i in node_ids]
         node_path_str = ' > '.join(node_titles)
+        # Get shortened path for display (skip top directory name)
+        if len(node_titles) > 1:
+            node_path_str_sm = ' > '.join(node_titles[1:])
+        else:
+            node_path_str_sm = root_title
         files = folder_dict[folder_id].files
         if files:
             df = pd.DataFrame.from_records(files)
             df.insert(0, 'path', node_path_str)
+            df['path_show'] = node_path_str_sm
             df_list.append(df)
     df = pd.concat(df_list, axis=0, ignore_index=True, sort=True)
     df = df[['path'] + [i for i in df.columns if i != 'path']]

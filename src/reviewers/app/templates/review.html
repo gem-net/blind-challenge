@@ -14,7 +14,7 @@
     <p><a href="{{ url_for('get_folder_zip') }}"><i class="far fa-file-archive mr-1"></i>Complete zip archive</a> (Note: it may take up to 20 seconds to build the zip file.)</p>
     <div class="drive-listing table-responsive">
     {% for path, d in df.groupby('path') %}
-        <pre>{{ path }}</pre>
+        <pre>{{ d.path_show.iloc[0] }}</pre>
         <table class="review-table table table-condensed table-striped table-hover">
         {% if loop.index == 1 %}
             <thead><tr>
