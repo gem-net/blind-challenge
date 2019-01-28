@@ -4,9 +4,9 @@ channels:
   - defaults
 dependencies:
   - Flask
-  - Flask-Mail
   - Flask-Moment
   - Flask-WTF
+  - Flask-Login
   - google-api-python-client
   - google-auth
   - pandas
@@ -14,3 +14,4 @@ dependencies:
   - networkx
   - pip:
     - flask-bootstrap
+    - mod_wsgi

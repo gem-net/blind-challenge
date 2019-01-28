@@ -1,1 +1,1 @@
-from reviewers.app import app
+from reviewers.app import app as application

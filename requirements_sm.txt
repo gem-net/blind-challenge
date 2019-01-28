@@ -1,0 +1,11 @@
+Flask
+Flask-Moment
+Flask-WTF
+Flask-Login
+google-api-python-client
+google-auth
+pandas
+python-dotenv
+networkx
+flask-bootstrap
+mod_wsgi
