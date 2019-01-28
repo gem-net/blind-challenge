@@ -26,12 +26,15 @@ class Folder:
         self.folders = OrderedDict()
 
         files = get_child_files(folder_id)
-        for ind, file_info in files.query('~is_folder').iterrows():
-            self.files.append(file_info)
-        for ind, folder_info in files.query('is_folder').iterrows():
-            sub_title = folder_info['title']
-            sub_id = folder_info['id']
-            self.folders[sub_id] = sub_title
+        if len(files):
+            for ind, file_info in files.query('~is_folder').iterrows():
+                self.files.append(file_info)
+            for ind, folder_info in files.query('is_folder').iterrows():
+                sub_title = folder_info['title']
+                sub_id = folder_info['id']
+                self.folders[sub_id] = sub_title
+        else:
+            logger.warning('Empty folder: {}'.format(folder_id))
 
 
 def get_child_files(folder_id):
@@ -51,26 +54,30 @@ def get_child_files(folder_id):
                           fields=file_fields).execute()
 
     files = pd.DataFrame.from_records(res['files'])  # type: pd.DataFrame
-    files.lastModifyingUser = files.lastModifyingUser.apply(lambda v: v['displayName'])
-    files.createdTime = files.createdTime.apply(parse_timestamp_str)
-    files.modifiedTime = files.modifiedTime.apply(parse_timestamp_str)
-    files.rename(columns={'webViewLink': 'url_view',
-                          'webContentLink': 'url_content',
-                          'thumbnailLink': 'thumb',
-                          'iconLink': 'icon',
-                          'modifiedTime': 'date_modified',
-                          'createdTime': 'date_created',
-                          'lastModifyingUser': 'last_user',
-                          'name': 'title'
-                         }, inplace=True)
-    file_cols_show = ['title', 'date_modified', 'last_user']
-    file_cols_other = ['id', 'mimeType', 'date_created', 'url_view', 'url_content',
-                       'icon', 'kind', 'thumb', 'trashed']
-    file_columns = file_cols_show + file_cols_other
-    files = files.query('~trashed')  # ignore trashed files
-    files = files[[i for i in file_columns if i in files.columns]].copy()
+    if len(files):
+        logger.info("Files loaded for folder {}: {} rows total".format(folder_id, len(files)))
+        # files.lastModifyingUser = files.lastModifyingUser.apply(lambda v: v['displayName'])
+        files.createdTime = files.createdTime.apply(parse_timestamp_str)
+        files.modifiedTime = files.modifiedTime.apply(parse_timestamp_str)
+        files.rename(columns={'webViewLink': 'url_view',
+                              'webContentLink': 'url_content',
+                              'thumbnailLink': 'thumb',
+                              'iconLink': 'icon',
+                              'modifiedTime': 'date_modified',
+                              'createdTime': 'date_created',
+                              'lastModifyingUser': 'last_user',
+                              'name': 'title'
+                             }, inplace=True)
+        file_cols_show = ['title', 'date_modified', 'last_user']
+        file_cols_other = ['id', 'mimeType', 'date_created', 'url_view', 'url_content',
+                           'icon', 'kind', 'thumb', 'trashed']
+        file_columns = file_cols_show + file_cols_other
+        files = files.query('~trashed')  # ignore trashed files
+        files = files[[i for i in file_columns if i in files.columns]].copy()
 
-    files['is_folder'] = files.mimeType.apply(lambda v: v.endswith('folder'))
+        files['is_folder'] = files.mimeType.apply(lambda v: v.endswith('folder'))
+    else:
+        logger.warning("No files found for folder {}.".format(folder_id))
     return files
 
 

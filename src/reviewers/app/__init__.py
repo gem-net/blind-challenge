@@ -1,5 +1,7 @@
 import os
+import sys
 from datetime import datetime
+import logging
 
 from flask import Flask, g, current_app
 from flask_bootstrap import Bootstrap
@@ -19,6 +21,10 @@ bootstrap.init_app(app)
 
 lm = LoginManager(app)
 lm.login_view = 'login'
+
+log_format = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
+logging.basicConfig(level=logging.INFO, stream=sys.stdout,
+                    format=log_format, datefmt="%Y-%m-%d %H:%M:%S")
 
 
 @lm.user_loader

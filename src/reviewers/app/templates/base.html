@@ -8,8 +8,9 @@
 
 
 {% block title %}
-    {% if title %}{{ title }}{% else %}C-GEM Members Portal{% endif %}
+    {% if title %}{{ title }}{% else %}C-GEM Reviewers Portal{% endif %}
 {% endblock %}
+
 
 {% block navbar %}
     <nav class="navbar navbar-default">
@@ -38,6 +39,7 @@
     </nav>
 {% endblock %}
 
+
 {% block content %}
     <div class="container-fluid">
         {% with messages = get_flashed_messages() %}
@@ -51,6 +53,7 @@
         {% block app_content %}{% endblock %}
     </div>
 {% endblock %}
+
 
 {% block scripts %}
     {{ super() }}
