@@ -9,7 +9,9 @@ dependencies:
   - Flask-Login
   - google-api-python-client
   - google-auth
+  - numpy=1.16.4
   - pandas
+  - python
   - pip
   - python-dotenv
   - networkx
