@@ -41,10 +41,9 @@ def load_members_list():
 @app.route('/')
 @login_required
 def browse():
-    if True:
-        return render_template("browse.html", df_dict=g.tables, cols_show=g.cols_show)
-    else:
-        abort(404)
+    title = app.config['CHALLENGE_NAME']
+    return render_template("browse.html", title=title, df_dict=g.tables,
+                           cols_show=g.cols_show)
 
 
 @app.route('/download/<file_id>')
