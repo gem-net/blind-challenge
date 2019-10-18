@@ -1,1 +1,1 @@
-from reviewers.app import app
+from blind_challenge.app import app

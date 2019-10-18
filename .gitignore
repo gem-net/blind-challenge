@@ -1,5 +1,8 @@
 .DS_Store
 .env
+.env.*
+notes/
+notebooks/
 
 # Temporary and binary files
 *~

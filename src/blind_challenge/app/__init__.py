@@ -1,13 +1,12 @@
 import os
 import sys
-from datetime import datetime
 import logging
+from collections import OrderedDict
 
 from flask import Flask, g, current_app
 from flask_bootstrap import Bootstrap
-from flask_mail import Mail
 from flask_moment import Moment
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager
 
 from .config import config
 from .models import User
@@ -34,7 +33,7 @@ def load_user(user_id):
 
 moment = Moment(app)
 
-TABLE_DICT = {}
+TABLE_DICT = OrderedDict()
 
 
 @app.before_request
@@ -43,19 +42,29 @@ def before_request():
 
 
 def update_g():
-    g.review = TABLE_DICT['review']
+    # get cols_show and dictionary of tables
+    tables = TABLE_DICT.copy()
+    cols_show = tables[next(iter(tables))].cols_show
+    for i in tables:
+        tables[i] = tables[i].df
+    g.tables = tables
+    g.cols_show = cols_show
 
 
 @app.before_first_request
 def update_drive_listing():
-    from .admin import ReviewTable
+    from .admin import DriveTable
 
-    review_folder_id = current_app.config['REVIEW_FOLDER_ID']
-    review_folder_title = current_app.config['REVIEW_FOLDER_TITLE']
+    drive_id_a = current_app.config['DRIVE_ID_A']
+    drive_name_a = current_app.config['DRIVE_NAME_A']
+
+    drive_id_b = current_app.config['DRIVE_ID_B']
+    drive_name_b = current_app.config['DRIVE_NAME_B']
 
     TABLE_DICT.clear()
     TABLE_DICT.update({
-        'review': ReviewTable(review_folder_id, review_folder_title),
+        drive_name_a: DriveTable(drive_id_a, drive_name_a),
+        drive_name_b: DriveTable(drive_id_b, drive_name_b),
     })
 
 

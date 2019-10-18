@@ -20,12 +20,13 @@ MIME_MAP = {
 
 
 class Folder:
-    def __init__(self, folder_id):
+    def __init__(self, folder_id=None, drive_id=None):
         self.folder_id = folder_id
+        self.drive_id = drive_id
         self.files = []
         self.folders = OrderedDict()
 
-        files = get_child_files(folder_id)
+        files = get_child_files(folder_id, drive_id=drive_id)
         if len(files):
             for ind, file_info in files.query('~is_folder').iterrows():
                 self.files.append(file_info)
@@ -37,22 +38,23 @@ class Folder:
             logger.warning('Empty folder: {}'.format(folder_id))
 
 
-def get_child_files(folder_id):
-    """Get dataframe of files in specified folder."""
-    file_fields = ("files(kind,id,name,webViewLink,webContentLink,iconLink,thumbnailLink,createdTime,"
-                   "modifiedTime,lastModifyingUser/displayName,mimeType,trashed)")
+def get_child_files(folder_id, drive_id=None):
+    """Get dataframe of files in specified folder of specified drive."""
+    file_fields = ("files(kind,id,name,webViewLink,webContentLink,iconLink,"
+                   "thumbnailLink,createdTime,modifiedTime,"
+                   "lastModifyingUser/displayName,mimeType,trashed)")
 
     from .admin import SERVICE_HANDLES
     collection = SERVICE_HANDLES['files'].files()
     res = collection.list(q="{!r} in parents".format(folder_id),
-                          corpora='teamDrive',
-                          includeTeamDriveItems=True,
                           orderBy='modifiedTime desc',
                           pageSize=100,
-                          supportsTeamDrives=True,
-                          teamDriveId='0AAiqq6S0lKYWUk9PVA',
-                          fields=file_fields).execute()
-
+                          driveId=drive_id,
+                          fields=file_fields,
+                          corpora='drive',
+                          includeItemsFromAllDrives=True,
+                          supportsAllDrives=True,
+                          ).execute()
     files = pd.DataFrame.from_records(res['files'])  # type: pd.DataFrame
     if len(files):
         logger.info("Files loaded for folder {}: {} rows total".format(folder_id, len(files)))
@@ -73,6 +75,7 @@ def get_child_files(folder_id):
                            'icon', 'kind', 'thumb', 'trashed']
         file_columns = file_cols_show + file_cols_other
         files = files.query('~trashed')  # ignore trashed files
+        # ignored_columns = [i for i in files.columns if i not in file_columns]
         files = files[[i for i in file_columns if i in files.columns]].copy()
 
         files['is_folder'] = files.mimeType.apply(lambda v: v.endswith('folder'))
@@ -87,7 +90,7 @@ def extract_folders(root_folder_id):
     folder_dict = {}  # will hold {id: Folder}
     title_dict = {}  # will hold titles for folder ids
 
-    root = Folder(root_folder_id)
+    root = Folder(folder_id=root_folder_id, drive_id=root_folder_id)
     folder_dict['root'] = root
     title_dict['root'] = 'root'
     for i, title in root.folders.items():
@@ -101,7 +104,7 @@ def extract_folders(root_folder_id):
         i += 1
         next_active = set()
         for subfolder_id in active_ids:
-            subfolder = Folder(subfolder_id)
+            subfolder = Folder(folder_id=subfolder_id, drive_id=root_folder_id)
             folder_dict[subfolder_id] = subfolder
             for new_sub_id in subfolder.folders:
                 title_dict[new_sub_id] = subfolder.folders[new_sub_id]
@@ -129,24 +132,31 @@ def file_tree_to_df(root_folder_id, root_title=None):
     graph.add_edges_from(edges)
 
     # BUILD DATAFRAME
+    # if graph.number_of_nodes:
     df_list = []
     for folder_id in folder_dict:
-        node_ids = nx.algorithms.shortest_paths.generic.shortest_path(graph, 'root', folder_id)
-        node_titles = [title_dict[i] for i in node_ids]
-        node_path_str = ' > '.join(node_titles)
-        # Get shortened path for display (skip top directory name)
-        if len(node_titles) > 1:
-            node_path_str_sm = ' > '.join(node_titles[1:])
+        if folder_id == 'root':
+            node_path_str, node_path_str_sm = root_title, root_title
         else:
-            node_path_str_sm = root_title
+            node_ids = nx.algorithms.shortest_paths.generic.shortest_path(graph, 'root', folder_id)
+            node_titles = [title_dict[i] for i in node_ids]
+            node_path_str = ' > '.join(node_titles)
+            # Get shortened path for display (skip top directory name)
+            if len(node_titles) > 1:
+                node_path_str_sm = ' > '.join(node_titles[1:])
+            else:
+                node_path_str_sm = root_title
         files = folder_dict[folder_id].files
         if files:
             df = pd.DataFrame.from_records(files)
             df.insert(0, 'path', node_path_str)
             df['path_show'] = node_path_str_sm
             df_list.append(df)
-    df = pd.concat(df_list, axis=0, ignore_index=True, sort=True)
-    df = df[['path'] + [i for i in df.columns if i != 'path']]
+    if df_list:
+        df = pd.concat(df_list, axis=0, ignore_index=True, sort=True)
+        df = df[['path'] + [i for i in df.columns if i != 'path']]
+    else:
+        df = pd.DataFrame()
     return df
 
 

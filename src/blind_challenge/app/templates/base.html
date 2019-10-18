@@ -8,7 +8,7 @@
 
 
 {% block title %}
-    {% if title %}{{ title }}{% else %}C-GEM Reviewers Portal{% endif %}
+    {% if title %}{{ title }}{% else %}Blind Challenge Portal{% endif %}
 {% endblock %}
 
 
@@ -22,7 +22,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url_for('review') }}">Reviewer Portal</a>
+                <a class="navbar-brand" href="{{ url_for('browse') }}">Blind Challenge Portal</a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             {% if current_user.is_authenticated %}

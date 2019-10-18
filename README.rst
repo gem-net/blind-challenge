@@ -1,19 +1,8 @@
-=========
-reviewers
-=========
+============================
+C-GEM Blind Challenge App
+============================
 
+Browse and download contents of Blind Challenge Shared Drives.
+Challenge participants can view the contents of their allocated
+Drive, while Evaluators can view the contents of both Drives.
 
-NSF review materials dashboard
-
-
-Description
-===========
-
-A longer description of your project goes here...
-
-
-Note
-====
-
-This project has been set up using PyScaffold 3.1. For details and usage
-information on PyScaffold see https://pyscaffold.org/.

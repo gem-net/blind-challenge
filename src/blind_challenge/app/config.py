@@ -5,9 +5,9 @@ from dotenv import load_dotenv, find_dotenv
 
 logger = logging.getLogger(__name__)
 
-env_path = find_dotenv()
-logger.info(env_path)
-load_dotenv(env_path)
+env_path = os.getenv('ENV_NAME', find_dotenv())
+logger.info("Loading .env from %s", env_path)
+load_dotenv(env_path, override=True)
 
 
 class Config(object):
@@ -22,10 +22,13 @@ class Config(object):
         'https://www.googleapis.com/auth/drive.metadata.readonly',
         'https://www.googleapis.com/auth/calendar.readonly',
         'https://www.googleapis.com/auth/calendar.events.readonly']
-    TEAM_DRIVE_ID = os.environ.get('TEAM_DRIVE_ID')
-    REVIEW_FOLDER_ID = os.environ.get('REVIEW_FOLDER_ID')
-    REVIEW_FOLDER_TITLE = os.environ.get('REVIEW_FOLDER_TITLE')
+    CREDENTIALS_AS_USER = os.environ.get('CREDENTIALS_AS_USER')
     SHARED_PSWD = os.environ.get('SHARED_PSWD')
+    CHALLENGE_NAME = os.environ.get('CHALLENGE_NAME')
+    DRIVE_ID_A = os.environ.get('DRIVE_ID_A')
+    DRIVE_ID_B = os.environ.get('DRIVE_ID_B')
+    DRIVE_NAME_A = os.environ.get('DRIVE_NAME_A')
+    DRIVE_NAME_B = os.environ.get('DRIVE_NAME_B')
 
 
 class DevelopmentConfig(Config):

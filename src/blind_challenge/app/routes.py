@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pandas as pd
 from flask import redirect, url_for, render_template, flash, abort, g, send_file
 from flask_login import login_required, login_user, logout_user
 
@@ -17,7 +18,7 @@ def login():
             flash('Incorrect password')
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('review'))
+        return redirect(url_for('browse'))
     return render_template("login.html", form=form)
 
 
@@ -39,18 +40,18 @@ def load_members_list():
 
 @app.route('/')
 @login_required
-def review():
+def browse():
     if True:
-        return render_template("review.html", df=g.review.df, cols_show=g.review.cols_show)
+        return render_template("browse.html", df_dict=g.tables, cols_show=g.cols_show)
     else:
         abort(404)
 
 
 @app.route('/download/<file_id>')
 def download(file_id):
-    from .review import download_file
+    from .drive import download_file
 
-    files = g.review.df
+    files = pd.concat(g.tables.values(), axis=0, ignore_index=True, sort=False)
     try:
         file_info = files[files.id == file_id].iloc[0]
     except IndexError:
@@ -66,12 +67,12 @@ def download(file_id):
 
 @app.route('/build_zip')
 def get_folder_zip():
-    from .review import download_folder_zip
+    from .drive import download_folder_zip
 
-    files = g.review.df
+    files = pd.concat(g.tables.values(), axis=0, ignore_index=True, sort=False)
     zipped_file = download_folder_zip(files)
     time_str = datetime.utcnow().strftime('%Y-%m-%d_%H:%M:%SZ')
-    out_name = 'C-GEM_files_{}.zip'.format(time_str)
+    out_name = 'files_{}.zip'.format(time_str)
     zipped_file.seek(0)
     return send_file(zipped_file, mimetype='application/zip',
                      as_attachment=True, attachment_filename=out_name)

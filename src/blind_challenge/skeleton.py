@@ -6,7 +6,7 @@ console script. To run this script uncomment the following lines in the
 [options.entry_points] section in setup.cfg:
 
     console_scripts =
-         fibonacci = reviewers.skeleton:run
+         fibonacci = blind_challenge.skeleton:run
 
 Then run `python setup.py install` which will install the command `fibonacci`
 inside your current environment.
@@ -20,7 +20,7 @@ import argparse
 import sys
 import logging
 
-from reviewers import __version__
+from blind_challenge import __version__
 
 __author__ = "Stephen Gaffney"
 __copyright__ = "Stephen Gaffney"
@@ -59,7 +59,7 @@ def parse_args(args):
     parser.add_argument(
         '--version',
         action='version',
-        version='reviewers {ver}'.format(ver=__version__))
+        version='blind_challenge {ver}'.format(ver=__version__))
     parser.add_argument(
         dest="n",
         help="n-th Fibonacci number",

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from reviewers.skeleton import fib
+from blind_challenge.skeleton import fib
 
 __author__ = "Stephen Gaffney"
 __copyright__ = "Stephen Gaffney"

@@ -1,4 +1,4 @@
-name: reviewers
+name: blind
 channels:
   - conda-forge
   - defaults
@@ -10,6 +10,7 @@ dependencies:
   - google-api-python-client
   - google-auth
   - pandas
+  - pip
   - python-dotenv
   - networkx
   - pip:

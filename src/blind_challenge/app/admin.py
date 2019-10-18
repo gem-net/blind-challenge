@@ -9,7 +9,7 @@ from googleapiclient.discovery import build
 # from oauth2client import file, client, tools
 
 from .helpers import parse_timestamp_str
-from .review import file_tree_to_df
+from .drive import file_tree_to_df
 
 
 def get_service_handles():
@@ -20,9 +20,12 @@ def get_service_handles():
 
     credentials = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    delegated_credentials = credentials.with_subject('stephen@gem-net.net')
+    delegated_credentials = credentials.with_subject(
+        current_app.config['CREDENTIALS_AS_USER']
+    )
 
-    files_service = build('drive', 'v3', credentials=delegated_credentials, cache_discovery=False)
+    files_service = build('drive', 'v3', credentials=delegated_credentials,
+                          cache_discovery=False)
     return {
         'files': files_service,
     }
@@ -62,7 +65,7 @@ class ApiTable:
         return dt.astimezone(timezone.utc).replace(tzinfo=None)
 
 
-class ReviewTable(ApiTable):
+class DriveTable(ApiTable):
 
     def __init__(self, root_folder_id, root_folder_title):
         self.refresh_minutes = 5
@@ -74,11 +77,13 @@ class ReviewTable(ApiTable):
         ('title', 'Document'),
         ('date_modified', 'Modified'),
     ])
-    cols_other = ['path', 'path_show', 'date_created', 'icon', 'id', 'kind', 'last_user', 'mimeType',
-                  'thumb', 'url_content', 'url_view']
+    cols_other = ['path', 'path_show', 'date_created', 'icon', 'id', 'kind',
+                  'last_user', 'mimeType', 'thumb', 'url_content', 'url_view']
 
     def refresh_df(self):
         files = file_tree_to_df(self.root_folder_id, self.root_folder_title)
-        files = files[list(ReviewTable.cols_show) + ReviewTable.cols_other]
-        files = files.sort_values(['path', 'mimeType', 'title'])
+        if len(files):
+            cols_present = [i for i in DriveTable.cols_other if i in files.columns]
+            files = files[list(DriveTable.cols_show) + cols_present]
+            files = files.sort_values(['path', 'mimeType', 'title'])
         self._df = files

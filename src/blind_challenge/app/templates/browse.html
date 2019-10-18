@@ -1,0 +1,68 @@
+<!-- goes in body -->
+{% extends "base.html" %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% block app_content %}
+
+<div class="container-fluid">
+    <div id="cgem_im" class="hidden-md hidden-lg"><img style="max-width:250px;" src="/static/cgem_750.png"></div>
+
+    <div class="row">
+    <div class="col-sm-12 col-md-push-4 col-md-7">
+        <h1><i class="far fa-file-alt"></i>Blind Challenge</h1>
+        <div id="download-instructions">
+            <p>You can download <strong>individual files</strong> below, or download a <strong>zip archive</strong> containing all files.</p>
+            <p>
+                <a id="zip-link" href="{{ url_for('get_folder_zip') }}">
+                <i class="far fa-file-archive mr-1"></i>Download complete zip archive</a>
+                <span id="zip-note">(Note: it may take up to 20 seconds to build.)</span>
+            </p>
+        </div>
+        {% for drive_name in df_dict %}
+            <div><h1>{{ drive_name }}</h1></div>
+            {% set df = df_dict[drive_name] %}
+            {% if df|length == 0 %}
+            <div><p>No files found in this section.</p></div>
+            {% else %}
+            <div class="drive-listing table-responsive">
+            {% for path, d in df.groupby('path') %}
+                <pre>{{ d.path_show.iloc[0] }}</pre>
+                <table class="review-table table table-condensed table-striped table-hover">
+                {% if loop.index == 1 %}
+                    <thead><tr>
+                    <th>Document</th>
+                    <!--<th>Modified</th>-->
+                    <!--<th>Download</th>-->
+                    </tr></thead>
+                {% endif %}
+                <tbody>
+                    {% for ind, row in d.iterrows() %}
+                    <tr>
+                        <td class="title-col"><a href="{{ url_for('download', file_id=row.loc['id']) }}">{# Previously row.loc['url_view'] #}
+                                <span class="mr-1"><img class="mt-1" src="{{ row.loc['icon'] }}" alt="icon"></span>
+                                {{ row.title }}
+                                </a></td>
+                        <!--<td class="mod-col">{{ moment(row.loc['date_modified']).calendar() }}</td>-->
+                        <!--<td><a href="{{ url_for('download', file_id=row.loc['id']) }}"><i class="fas fa-cloud-download-alt"></i></a></td>-->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            {% endfor %}
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div id="cgem-links" class="col-sm-12 col-md-pull-7 col-md-offset-1 col-md-3">
+        <div class="cgem_im hidden-xs hidden-sm"><img style="max-width:210px;" src="/static/cgem_750.png"></div>
+        <h1><i class="fas fa-external-link-alt"></i>Links</h1>
+        <a class="btn btn-info" href="http://gem-net.net" target="_blank">GEM-NET</a>
+        <a class="btn btn-info" href="http://gem-net.net/blog" target="_blank">Blog</a>
+        <a class="btn btn-info" href="http://gem-net.net/podcast" target="_blank">Podcast</a>
+        <a class="btn btn-info" href="https://twitter.com/cgem_cci" target="_blank">Twitter</a>
+        <a class="btn btn-info" href="https://eternagame.org/home/" target="_blank">Eterna</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
